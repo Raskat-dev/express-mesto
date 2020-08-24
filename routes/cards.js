@@ -1,10 +1,10 @@
 const cardsRouter = require('express').Router();
 const path = require('path');
-const { readFile } = require('../read-file');
+const { readFile } = require('../helpers/read-file');
 
 const cardsPath = path.join(__dirname, '../data/cards.json');
 
-cardsRouter.get('/cards', (req, res) => {
+cardsRouter.get('/', (req, res) => {
   readFile(cardsPath)
     .then((data) => JSON.parse(data))
     .then((cardsData) => res.status(200).send(cardsData))

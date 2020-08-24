@@ -1,18 +1,18 @@
 const usersRouter = require('express').Router();
 const userRouter = require('express').Router();
 const path = require('path');
-const { readFile } = require('../read-file');
+const { readFile } = require('../helpers/read-file');
 
 const usersPath = path.join(__dirname, '../data/users.json');
 
-usersRouter.get('/users', (req, res) => {
+usersRouter.get('/', (req, res) => {
   readFile(usersPath)
     .then((data) => JSON.parse(data))
     .then((usersData) => res.status(200).send(usersData))
     .catch((err) => res.status(404).send(`Ошибка, ${err}`));
 });
 
-userRouter.get('/users/:id', (req, res) => {
+userRouter.get('/:id', (req, res) => {
   const userId = req.params.id;
   readFile(usersPath)
     .then((data) => JSON.parse(data))

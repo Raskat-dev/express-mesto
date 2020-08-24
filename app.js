@@ -13,7 +13,7 @@ app.listen(PORT, () => {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', usersRouter);
-app.use('/', cardsRouter);
-app.use('/', userRouter);
+app.use('/users', usersRouter);
+app.use('/cards', cardsRouter);
+app.use('/users', userRouter);
 app.use('/*', errorRouter);
