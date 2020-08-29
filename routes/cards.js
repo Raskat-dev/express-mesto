@@ -1,14 +1,12 @@
-const cardsRouter = require('express').Router();
-const path = require('path');
-const { readFile } = require('../helpers/read-file');
+const cardRouter = require('express').Router();
+const {
+  getCards, createCard, deleteCard, likeCard, dislikeCard,
+} = require('../controllers/cards');
 
-const cardsPath = path.join(__dirname, '../data/cards.json');
+cardRouter.get('/', getCards);
+cardRouter.post('/', createCard);
+cardRouter.delete('/:cardId', deleteCard);
+cardRouter.put('/:cardId/likes', likeCard);
+cardRouter.delete('/:cardId/likes', dislikeCard);
 
-cardsRouter.get('/', (req, res) => {
-  readFile(cardsPath)
-    .then((data) => JSON.parse(data))
-    .then((cardsData) => res.status(200).send(cardsData))
-    .catch((err) => res.status(404).send(`Ошибка, ${err}`));
-});
-
-module.exports = cardsRouter;
+module.exports = cardRouter;
