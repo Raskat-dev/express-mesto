@@ -1,9 +1,10 @@
 const Card = require('../models/card');
+const { validationError, serverError } = require('../utils/utils');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: `${err.message}. На сервере произошла ошибка` }));
+    .catch((err) => serverError(err, res));
 };
 
 module.exports.createCard = (req, res) => {
@@ -12,69 +13,30 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: ownerId })
     .then((card) => res.send(card))
-    .catch((err) => {
-      if (err.name === 'ErrorName') {
-        return res.status(400).send({ message: 'Переданы некорректные данные в метод создания карточки' });
-      }
-      return res.status(500).send({ message: `${err.message}. На сервере произошла ошибка` });
-    });
+    .catch((err) => validationError(err, res, 'Переданы некорректные данные в метод создания карточки'));
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-      if (card) {
-        res.send(card);
-        return;
-      }
-      res.status(404).send({ message: 'Нет карточки с таким id' });
-    })
-    .catch((err) => {
-      if (err.name === 'ErrorName') {
-        return res.status(400).send({ message: 'Переданы некорректные данные в метод удаления карточки' });
-      }
-      return res.status(500).send({ message: `${err.message}. На сервере произошла ошибка` });
-    });
+  Card.findOneAndDelete({ _id: req.params.cardId })
+    .orFail(new Error('Нет карточки с таким id'))
+    .then((card) => res.send(card))
+    .catch((err) => validationError(err, res, 'Переданы некорректные данные в метод удаления карточки'));
 };
 
 module.exports.likeCard = (req, res) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
+  Card.findOneAndUpdate({ _id: req.params.cardId },
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true },
-  )
-    .then((card) => {
-      if (card) {
-        res.send(card);
-        return;
-      }
-      res.status(404).send({ message: 'Нет карточки с таким id' });
-    })
-    .catch((err) => {
-      if (err.name === 'ErrorName') {
-        return res.status(400).send({ message: 'Переданы некорректные данные в метод удаления карточки' });
-      }
-      return res.status(500).send({ message: `${err.message}. На сервере произошла ошибка` });
-    });
+    { new: true })
+    .orFail(new Error('Нет карточки с таким id'))
+    .then((card) => res.send(card))
+    .catch((err) => validationError(err, res, 'Переданы некорректные данные в метод редактирования карточки'));
 };
 
 module.exports.dislikeCard = (req, res) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
+  Card.findOneAndUpdate({ _id: req.params.cardId },
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true },
-  )
-    .then((card) => {
-      if (card) {
-        res.send(card);
-        return;
-      }
-      res.status(404).send({ message: 'Нет карточки с таким id' });
-    })
-    .catch((err) => {
-      if (err.name === 'ErrorName') {
-        return res.status(400).send({ message: 'Переданы некорректные данные в метод удаления карточки' });
-      }
-      return res.status(500).send({ message: `${err.message}. На сервере произошла ошибка` });
-    });
+    { new: true })
+    .orFail(new Error('Нет карточки с таким id'))
+    .then((card) => res.send(card))
+    .catch((err) => validationError(err, res, 'Переданы некорректные данные в метод редактирования карточки'));
 };
