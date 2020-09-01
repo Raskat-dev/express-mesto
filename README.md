@@ -9,7 +9,7 @@
 * Express
 
 ### Алгоритм развертки проекта:
-1. Выполнить команду git clone https://github.com/Raskat-dev/express-react.git или скачать репозиторий архивом;
+1. Выполнить команду git clone https://github.com/Raskat-dev/express-mesto.git или скачать репозиторий архивом;
 2. Выполнить команду npm run start для запуска сервера, или npm run dev для запуска сервера с hot-reload.
 
 ### Планы:
